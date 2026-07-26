@@ -1,0 +1,13 @@
+--- a/packages/apps/Aperture/app/src/main/java/org/lineageos/aperture/repositories/CameraRepository.kt
++++ b/packages/apps/Aperture/app/src/main/java/org/lineageos/aperture/repositories/CameraRepository.kt
+@@ -115,6 +115,10 @@
+     private fun CameraInfo.isInternalCameraAllowed(): Boolean {
+         val camera2CameraInfo = Camera2CameraInfo.from(this)
+ 
++        if (overlaysRepository.ignoredAuxCameraIds.contains(camera2CameraInfo.cameraId)) {
++            return false
++        }
++
+         return when (camera2CameraInfo.cameraId) {
+             in mainCameraIds -> true
+             else -> {

@@ -1,0 +1,65 @@
+From c9fa8fa467f88e656de427a79a940e2af9f1ef2d Mon Sep 17 00:00:00 2001
+From: z <z@ze.fyi>
+Date: Tue, 5 May 2026 15:52:20 +0800
+Subject: [PATCH] [tmp]add trigger for udfps
+
+Change-Id: Icc3f030bd12ff47f4c50bd8f3d97cd6e2c2e697d
+---
+ .../systemui/biometrics/UdfpsController.java       | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/frameworks/base/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java
+index c906e6594132..0d57ab75096a 100644
+--- a/frameworks/base/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java
++++ b/frameworks/base/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java
+@@ -126,6 +126,9 @@ import kotlin.Unit;
+ import kotlinx.coroutines.CoroutineScope;
+ 
+ import java.io.PrintWriter;
++import java.io.FileOutputStream;
++import java.io.IOException;
++import java.nio.charset.StandardCharsets;
+ import java.util.ArrayList;
+ import java.util.HashSet;
+ import java.util.Set;
+@@ -148,6 +151,7 @@ import javax.inject.Inject;
+ @SysUISingleton
+ public class UdfpsController implements DozeReceiver, Dumpable {
+     private static final String TAG = "UdfpsController";
++    private static final String FPPRESS_PATH = "/sys/kernel/oplus_display/notify_fppress";
+     private static final long AOD_SEND_FINGER_UP_DELAY_MILLIS = 1000;
+ 
+     private static final long MIN_UNCHANGED_INTERACTION_LOG_INTERVAL = 50;
+@@ -1104,6 +1108,7 @@ public class UdfpsController implements DozeReceiver, Dumpable {
+         }
+ 
+         if (!mOnFingerDown) {
++            writeFppress(1);
+             playStartHaptic();
+ 
+             mDeviceEntryFaceAuthInteractor.onUdfpsSensorTouched();
+@@ -1167,12 +1172,21 @@ public class UdfpsController implements DozeReceiver, Dumpable {
+                     cb.onFingerUp();
+                 }
+             }
++            writeFppress(0);
+         }
+         mOnFingerDown = false;
+         unconfigureDisplay(view);
+         cancelAodSendFingerUpAction();
+     }
+ 
++    private void writeFppress(int value) {
++        try (FileOutputStream output = new FileOutputStream(FPPRESS_PATH)) {
++            output.write(Integer.toString(value).getBytes(StandardCharsets.US_ASCII));
++        } catch (IOException e) {
++            Log.w(TAG, "Failed to write fppress value: " + value, e);
++        }
++    }
++
+     /**
+      * Callback for fingerUp and fingerDown events.
+      */
+-- 
+2.54.0
+

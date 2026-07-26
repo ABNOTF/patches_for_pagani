@@ -125,7 +125,48 @@ git clone https://github.com/LineageOS/android_hardware_oplus -b lineage-23.2 ha
 
 ## 三、提取专有文件（blobs）
 
-准备一份 ColorOS（COS）或 OxygenOS（OOS）固件的提取目录（下称 *dump*），然后：
+### 1. 准备工具
+
+**payload-dumper-go**（解包 payload.bin）：
+
+- Arch Linux：添加 [archlinuxcn](https://www.archlinuxcn.org/) 镜像源后执行 `sudo pacman -S payload-dumper-go`
+- Debian / Ubuntu：从 [GitHub Releases](https://github.com/ssut/payload-dumper-go/releases/tag/1.3.0) 下载对应平台的二进制
+
+**erofs-utils**（解 EROFS 分区，必装）：
+
+```bash
+sudo pacman -S erofs-utils        # Arch
+sudo apt install erofs-utils      # Debian / Ubuntu
+```
+
+### 2. 解包固件
+
+从固件包中取出 `payload.bin`（OTA zip 直接解压即可；COS 的 `.ofp` 包需先用 ofp 解密工具处理），然后：
+
+```bash
+mkdir -p ~/dumps/pagani
+payload-dumper-go -o ~/dumps/pagani payload.bin
+```
+
+程序会把固件里的所有分区解成单独的 `.img` 文件。
+
+### 3. 解出分区内容
+
+其中文件系统分区是 EROFS 格式，需要再解一层。在 dump 目录下执行：
+
+```bash
+cd ~/dumps/pagani
+for part in system system_ext product vendor odm my_product my_stock; do
+    fsck.erofs --extract="$part" "$part.img"
+done
+```
+
+完成后 dump 目录应为：每个分区一个**同名文件夹**（解出的文件）+ 其余 `.img` **原样保留**——`boot.img`、`modem.img` 这类无需解包，`extract-files.py` 会直接读取。
+
+> - 若 `extract-files.py` 引用了其他分区（如 `my_heytap`），按同样方式补解即可。
+> - 个别分区若为 ext4 格式导致 fsck.erofs 失败，改用 `7z x xxx.img` 解出。
+
+### 4. 运行提取脚本
 
 ```bash
 cd device/oneplus/pagani

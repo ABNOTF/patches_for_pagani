@@ -65,7 +65,7 @@ sudo apt install bc bison build-essential ccache curl flex g++-multilib gcc-mult
     libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool \
     squashfs-tools xsltproc xxd zip zlib1g-dev
 ```
-
+Debian/Ubuntu需自行下载repo(或者询问ai)
 ### 使用北外（BFSU）镜像站同步源码（国内推荐）
 
 北外镜像站（`mirrors.bfsu.edu.cn`）完整镜像了 LineageOS 与 AOSP，可替代默认的 GitHub / googlesource 源：

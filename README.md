@@ -64,10 +64,10 @@ repo sync -c -j4 --fail-fast
 | `0002-tmp-hide-cameraid1-for-aperture.patch` | `packages/apps/Aperture` | 让 Aperture 的摄像头忽略列表对主摄（ID 0/1）同样生效 |
 
 ```bash
-cd /path/to/source(源码路径)
-patch -p1 -i ~/path/to/patch(补丁路径)/android_develop/0001-tmp-add-trigger-for-udfps.patch
+cd /path/to/source
+patch -p1 -i ~/path/to/patch/android_develop/0001-tmp-add-trigger-for-udfps.patch
 
-cd /path/to/source(源码路径)
+cd /path/to/source
 patch -p1 -i ~/path/to/patch/android_develop/0001-tmp-add-trigger-for-udfps.patch
 ```
 

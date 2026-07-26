@@ -18,12 +18,31 @@
 - **COS/OOS**：即ColorOS和OxygenOS对应中国版系统和外国版系统
 - **/path/to/xxx**：即你的文件目录
 
+## 参考配置
+
+笔者构建环境（天选 6 Pro）：
+
+| 项目 | 配置 |
+|---|---|
+| CPU | Ultra 7 255HX |
+| 内存 | Samsung DDR5 5600MHz 16 GB |
+| 硬盘 | Samsung MZVL81T0HELB-00BTW |
+| 系统 | Arch Linux (rolling, testing) |
+| swap | 24 GB |
+| zram | 8 GB (lz4) |
+
+合计约 48 GB 可用内存时 `-j6` 可编译通过；物理内存更小请降低 `-j` 线程数，避免链接阶段 OOM。
+
+- **补丁 `git am` 失败**：上游源码已变动，需手动对照补丁内容合并。
+- **`extract-files.py` 报缺文件**：检查 eUICC / Hotword 组件是否已备齐 OOS 文件，或已按说明注释对应行。
+- **同步上游后功能异常**：检查两个补丁是否仍在新源码上，必要时重新应用。
+
+
 ## 前置要求
 
-- 已初始化的 LineageOS 源码树（`lineage-23.2` 分支，完成 `repo sync`）
 - 正常可用的 AOSP 编译环境
 - 磁盘空间：**约 330 GB 以上**（源码 + 编译产物）
-- 可用内存建议 32 GB 以上（含 swap/zram，见文末参考配置）
+- 可用内存建议 48 GB 以上（含 swap/zram）
 
 ### 安装构建依赖
 
@@ -46,13 +65,6 @@ sudo apt install bc bison build-essential ccache curl flex g++-multilib gcc-mult
     libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool \
     squashfs-tools xsltproc xxd zip zlib1g-dev
 ```
-
-注意事项：
-
-- **不需要安装 JDK**——AOSP 使用源码树内置的 prebuilt JDK，安装系统 JDK 反而可能引发问题。
-- Arch 下若编译报 `libncurses.so.5` 缺失（个别 prebuilt 工具链依赖旧库），从 AUR 安装 `ncurses5-compat-libs`。
-- `p7zip` 用于解包 EROFS 格式的固件 img（提取 blobs 阶段会用到）。
-- 建议启用 ccache 加速二次编译：`export USE_CCACHE=1 && ccache -M 50G`（可写入 `~/.bashrc`）。
 
 ### 使用北外（BFSU）镜像站同步源码（国内推荐）
 
@@ -156,6 +168,7 @@ payload-dumper-go -o ~/dumps/pagani payload.bin
 
 ```bash
 cd ~/dumps/pagani
+mkdir system system_ext product vendor odm my_product my_stock
 for part in system system_ext product vendor odm my_product my_stock; do
     fsck.erofs --extract="$part" "$part.img"
 done
@@ -163,6 +176,7 @@ done
 
 完成后 dump 目录应为：每个分区一个**同名文件夹**（解出的文件）+ 其余 `.img` **原样保留**——`boot.img`、`modem.img` 这类无需解包，`extract-files.py` 会直接读取。
 
+⚠️ **注意事项**：若需要euicc和谷歌助手唤醒，需再进行一次如上操作，如对该注意事项不理解，请问ai
 
 ### 4. 运行提取脚本
 
@@ -215,26 +229,6 @@ m bacon -j6              # 线程数按 CPU 核数与内存酌情调整
 编译产物输出在 `out/target/product/pagani/` 下（`lineage-23.2-*.zip`）。
 
 首次刷入请参考 LineageOS 官方 wiki 的通用流程（解锁 → 刷入 recovery → `adb sideload` 升级包）。
-
-## 参考配置与编译资源
-
-笔者构建环境（天选 6 Pro）：
-
-| 项目 | 配置 |
-|---|---|
-| CPU | Ultra 7 255HX |
-| 内存 | Samsung DDR5 5600MHz 16 GB |
-| 硬盘 | Samsung MZVL81T0HELB-00BTW |
-| 系统 | Arch Linux (rolling, testing) |
-| swap | 24 GB |
-| zram | 8 GB (lz4) |
-
-合计约 48 GB 可用内存时 `-j6` 可编译通过；物理内存更小请降低 `-j` 线程数，避免链接阶段 OOM。
-
-- **补丁 `git am` 失败**：上游源码已变动，需手动对照补丁内容合并。
-- **`extract-files.py` 报缺文件**：检查 eUICC / Hotword 组件是否已备齐 OOS 文件，或已按说明注释对应行。
-- **同步上游后功能异常**：检查两个补丁是否仍在新源码上，必要时重新应用。
-
 
 ## 进阶:签名构建
 

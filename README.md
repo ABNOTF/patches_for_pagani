@@ -25,6 +25,35 @@
 - 磁盘空间：**约 330 GB 以上**（源码 + 编译产物）
 - 可用内存建议 32 GB 以上（含 swap/zram，见文末参考配置）
 
+### 安装构建依赖
+
+**Arch Linux**（笔者环境）：
+
+```bash
+# 注意：/etc/pacman.conf 需启用 [multilib] 仓库（lib32-* 包依赖它）
+sudo pacman -S --needed base-devel bc bison ccache curl flex git git-lfs gnupg gperf \
+    imagemagick protobuf python-protobuf lib32-readline lib32-zlib elfutils gnutls \
+    lz4 lzo openssl libxml2 libxslt pngcrush rsync squashfs-tools xxd zip unzip zlib \
+    repo zstd p7zip
+```
+
+**Debian / Ubuntu**（与 LineageOS 官方 wiki 一致）：
+
+```bash
+sudo apt install bc bison build-essential ccache curl flex g++-multilib gcc-multilib \
+    git git-lfs gnupg gperf imagemagick protobuf-compiler python3-protobuf \
+    lib32readline-dev lib32z1-dev libdw-dev libelf-dev libgnutls28-dev lz4 \
+    libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool \
+    squashfs-tools xsltproc xxd zip zlib1g-dev
+```
+
+注意事项：
+
+- **不需要安装 JDK**——AOSP 使用源码树内置的 prebuilt JDK，安装系统 JDK 反而可能引发问题。
+- Arch 下若编译报 `libncurses.so.5` 缺失（个别 prebuilt 工具链依赖旧库），从 AUR 安装 `ncurses5-compat-libs`。
+- `p7zip` 用于解包 EROFS 格式的固件 img（提取 blobs 阶段会用到）。
+- 建议启用 ccache 加速二次编译：`export USE_CCACHE=1 && ccache -M 50G`（可写入 `~/.bashrc`）。
+
 ### 使用北外（BFSU）镜像站同步源码（国内推荐）
 
 北外镜像站（`mirrors.bfsu.edu.cn`）完整镜像了 LineageOS 与 AOSP，可替代默认的 GitHub / googlesource 源：

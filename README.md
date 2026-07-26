@@ -142,7 +142,7 @@ git clone https://github.com/LineageOS/android_hardware_oplus -b lineage-23.2 ha
 **payload-dumper-go**（解包 payload.bin）：
 
 - Arch Linux：添加 [archlinuxcn](https://www.archlinuxcn.org/) 镜像源后执行 `sudo pacman -S payload-dumper-go`
-- Debian / Ubuntu：从 [GitHub Releases](https://github.com/ssut/payload-dumper-go/releases/tag/1.3.0) 下载对应平台的二进制
+- Debian / Ubuntu：从 [GitHub Releases](https://github.com/ssut/payload-dumper-go/releases/tag/1.3.0) 下载linux_amd64注意不是arm64
 
 **erofs-utils**（解 EROFS 分区，必装）：
 

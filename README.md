@@ -137,7 +137,10 @@ git clone https://github.com/LineageOS/android_hardware_oplus -b lineage-23.2 ha
 
 ## 三、提取专有文件（blobs）
 
-### 1. 准备工具
+### 1. 准备资源&工具
+先获取COS与OOS,版本号应均为16.0.9.400.
+需要注意的是选择型号为13t下载的即为COS,而选择13s下载的即为13s
+https://roms.danielspringer.at/index.php?view=ota
 
 **payload-dumper-go**（解包 payload.bin）：
 

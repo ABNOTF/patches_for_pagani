@@ -109,7 +109,7 @@ cd /path/to/source
 patch -p1 -i ~/path/to/patch/android_develop/0001-tmp-add-trigger-for-udfps.patch
 
 cd /path/to/source
-patch -p1 -i ~/path/to/patch/android_develop/0001-tmp-add-trigger-for-udfps.patch
+patch -p1 -i ~/path/to/patch/android_develop/0002-tmp-hide-cameraid1-for-aperture.patch
 ```
 
 如需还原源码树原状，在对应仓库执行 `git reset --hard HEAD~1` 即可。

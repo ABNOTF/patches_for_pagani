@@ -223,7 +223,7 @@ my_product/priv-app/HotwordEnrollmentYGoogleHEXAGON_WIDEBAND.apk
 ## 四、编译
 
 返回源码根目录：
-在编译前请注释`sepolicy/qti/vendor/genfs_contexts`中的
+在编译前请注释`hardware/oplus/sepolicy/qti/vendor/genfs_contexts`中的
 ```bash
 genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/89c000.qcom,qup_uart/wakeup u:object_r:sysfs_wakeup:s0
 ```
